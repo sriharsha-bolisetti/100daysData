@@ -17,7 +17,7 @@ ORDER BY COUNT(*) DESC;
 - Guess we had a bad design!
 - Two possibities to fix up.
 
-Solution 1.
+### Solution 1.
 
 - Merge the two tables, delete the orginal ones.
 
@@ -49,12 +49,12 @@ FROM caption_tags;
 ```
 
 - This might not work all the time
-- Can't copy over the ID's of photo_tags and caption_tags since they must be unique. -- breaks referential integrity!
+- Can't copy over the ID's of photo_tags and caption_tags since they must be `unique`. -- breaks referential integrity!
 - If we delete original tables, we break any existing queries that refer to them! -- costly rewrities.
 
-Solution 2 
+### Solution 2 
 
-- Create a view.
+- Create a `view`.
 - Create a fake table of sorts that has rows from other tables.
 - These can be exact rows as they exist on another table, or a computed value.
 - Can reference the view in any place where we'd normally reference a table.
