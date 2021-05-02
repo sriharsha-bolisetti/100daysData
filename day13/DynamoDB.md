@@ -76,3 +76,27 @@ When user, say Harsha wants to view all the users he's following, the Twitter ba
 
 This isn't idea as we're making multiple rquests to DynamoDB. However, there's no better way to handle it. If you have highly-mutable many-to-many relationships in DynamoDB you'll likely need to make multiple requests at read time.
 
+
+### What is Global Secondary Indexes?
+
+- GSI allows you to query attributes of a row that are not the partition key that you originally selected when you created your table.
+- Define a GSI index -> involves selecting a new partition key.
+- Projected attributes -> you can just select subset of attributes you care about
+- Creating a GSI clones your primary table using your new partion key, but keeps these two tables in sync.
+- GSI table plays by the same rules as a normal Dynamo table.
+- GSI Partition key requires uniform data distribution.
+- Define RCU/WCU capacity separately on the index.
+- Throttling can be enabled on just GSI table.
+- Writes to the main table result in a write to the GSI, effectively double the cost of writing.
+- Can only have max 20 GSI.
+- Writes to the main table are `eventually replicated` on the GSI. (No Guaranteed SLA).
+- Keep your WCU capacity on your GSI tables >= the WCU capacity on your main table.
+- Separate metrics on your GSI - monitor them accordingly.
+
+### Local Secondary Index 
+
+- DynamoDB can only have `one` Sort Key. 
+- LSI can essentially act as second sort key.
+- Can `only` be defined on `table creation time`.
+- Only limited to 5 LSI.
+- No extra cost.
