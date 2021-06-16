@@ -1,0 +1,10 @@
+#### Data consistency checks at application level 
+##### Enforcing Consistency with Explicit Blocking Locks
+- Global validity checks require extra thought under non-serializable MVCC. 
+- For example, a banking application might wish to check that the sum of all credits in one table equal the sum of debits in another table, when both tables are actively updated.
+- Comparing the results of two successive `select sum(...)` commands will not work reliably in Read Committed mode, since the second query will likely include the results of transactions not counted by the first.
+- Doing the two sums in a repeatable read transaction will give an accurate picture of only the effects of transactions that committed before the repeatable read transaction started - but one might legitimately wonder whether the answer is still relevant by the time it is delivered.
+- if the repeatable read transaction itself applied some changes before trying to make the consistency check, the usefulness of the check becomes more debatable, since now it includes some but not all post-transaction-start changes. In such cases a careful person might wish to lock all tables needed for the check, in order to get an indisputable picture of current reality. A `SHARE` mode (or higher) lock guarantees that there are no uncommitted changes in the locked table, other than those of the current transaction.
+- If relying on explicit locking to prevent concurrent changes, `Read committed mode` should be used or, in `Repeatable Read` mode be careful to obtain locks before performing queries.
+- A lock obtained by a repeatable read transaction guarantees that no other transactions modifying the table are still running, but if `snapshot seen by the current transaction predates obtaining the lock`, it might predate some now-committed changes in the table.
+- A repeatable read transaction's snapshot is actually frozen at the start of its first query or data-modification command (select, insert, update or delete), so it is possible to obtain locks explicitly before ths snapshot is frozen.
